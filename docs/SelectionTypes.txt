@@ -1,0 +1,1 @@
+{"Leaderboards": {"Table": ["Group", "Stats", "Position"], "Dropdown": ["League", "Team", "SingleSeason", "Split", "Min", "Season1", "Season2", "Age1", "Age2"], "Checkbox": ["SplitTeams", "ActiveRoster", "HOF", "SplitSeason", "Rookies"]}, "Projections": {"Table": ["Stats", "Position", "Projection", "Update"], "Dropdown": ["Team", "League"], "Checkbox": []}}
