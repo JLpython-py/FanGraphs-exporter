@@ -125,59 +125,20 @@ Geckodriver executable could not be found in any of the following locations:
         except:
             self.webdriver.execute_script("arguments[0].click();", popup)
 
-class Projections:
-    def __init__(self):
-        self.base = "https://www.fangraphs.com/projections.aspx"
+class FanGraphs:
+    def __init__(self, *, setting):
         self.original = 'FanGraphs Leaderboard.csv'
-        self.name = f"{str(uuid.uuid4()}.csv"
-        self.selectors = {
-            'Stats': {'Options': 'ProjectionBoard1_tsStats'},
-            'Position': {'Options': 'ProjectionBoard1_tsPosition'},
-            'Team': {'Dropdown': 'ProjectionBoard1_rcbTeam',
-                     'Options': 'ProjectionBoard1_rcbTeam_DropDown'},
-            'League': {'Dropdown': 'ProjectionBoard1_rcbLeague',
-                       'Options': 'ProjectionBoard1_rcbLeague_DropDown'},
-            'Projection': {'Options': 'ProjectionBoard1_tsProj'},
-            'Update': {'Options': 'ProjectionBoard1_tsUpdate'}}
+        self.new = f"{str(uuid.uuidr())}.csv"
+        with open(f"docs\BaseAddress.txt") as jsonfile:
+            base_address = json.load(jsonfile)
+        with open(f"docs\Selectors.txt") as jsonfile:
+            selectors = json.load(jsonfile)
+        with open(f"docs\SelectionTypes.txt") as jsonfile:
+            selection_types = json.load(jsonfile)
 
-class Leaderboards:
-    def __init__(self):
-        self.base = 'https://www.fangraphs.com/leaders.aspx'
-        self.original = 'FanGraphs Leaderboard.csv'
-        self.name = f"{str(uuid.uuid4())}.csv"
-        self.selectors = {
-            'Group': {'Options': 'LeaderBoard1_tsGroup'},
-            'Stats': {'Options': 'LeaderBoard1_tsStats'},
-            'League': {'Dropdown': 'LeaderBoard1_rcbLeague',
-                       'Options': 'LeaderBoard_rcbTeam_DropDown'},
-            'Team': {'Dropdown': 'LeaderBoard1_rcbTeam',
-                     'Options': 'LeaderBoard1_rcbTeam_DropDown'},
-            'SplitTeams': {'Checkbox': 'LeaderBoard1_cbTeams'},
-            'ActiveRoster': {'Checkbox': 'LeaderBoard1_cbActive'},
-            'HOF': {'Checkbox': 'LeaderBoard1_cbHOF'},
-            'Position': {'Options': 'LeaderBoard1_tsPosition'},
-            'SplitSeason': {'Checkbox': 'LeaderBoard1_cbSeason',
-                            'Button': 'LeaderBoard1_btnMSeason'},
-            'Rookies': {'Checkbox': 'LeaderBoard1_cbRookie',
-                        'Rookies': 'LeaderBoard1_btnMSeason'},
-            'SingleSeason': {'Dropdown': 'LeaderBoard_rcbSeason',
-                              'Options': 'LeaderBoard1_rcbSeason_DropDown'},
-            'Split': {'Dropdown': 'LeaderBoard1_rcbMonth',
-                      'Options': 'LeaderBoard1_rcbMonth_DropDown'},
-            'Min': {'Dropdown': 'LeaderBoard1_rcbMin',
-                    'Options': 'LeaderBoard1_rcbMin_DropDown'},
-            'Season1': {'Dropdown': 'LeaderBoard1_rcbSeason1',
-                         'Options': 'LeaderBoard1_rcbSeason1_DropDown',
-                         'Button': 'LeaderBoard1_btnMSeason'},
-            'Season2': {'Dropdown': 'LeaderBoard1_rcbSeason2',
-                         'Options': 'LeaderBoard1_rcbSeason2_DropDown',
-                         'Button': 'LeaderBoard1_btnMSeason'},
-            'Age1': {'Dropdown': 'LeaderBoard1_rcbAge1',
-                      'Options': 'LeaderBoard1_rcbAge1_DropDown',
-                      'Button': 'LeaderBoard1_cmdAge'},
-            'Age2': {'Dropdown': 'LeaderBoard1_rcbAge2',
-                      'Options': 'LeaderBoard1_rcbAge2_DropDown',
-                      'Button': 'LeaderBoard1_cmdAge'}}
+        self.base = base_address.get(setting)
+        self.selectors = selectors.get(setting)
+        self.selection_types = selection_types.get(setting)
         self.options = {}
         self.init_webdriver = WebDriver()
         self.webdriver = self.init_webdriver.webdriver
@@ -188,24 +149,19 @@ class Leaderboards:
         for (category, option) in arguments.items():
             self.refresh_options()
             try:
-                self.clear_popup()
+                self.webdriver.clear_popup()
             except:
                 pass
-            if category in ('Group', 'Stats', 'Position'):
+            if category in self.selection_types['Table']:
                 index = list(self.options[category]).index(option)
                 self.webdriver.click_table(self.selectors[category], index)
-            elif category in ('League', 'Team', 'SingleSeason', 'Split',
-                              'Min', 'Age1', 'Age2'):
+            elif category in self.selection_types['Dropdown']:
                 index = list(self.options[category]).index(option)
                 self.webdriver.click_dropdown(self.selectors[category], index)
-                if 'Button' in self.selectors[category]:
-                    self.webdriver.click_button(self.selectors[category])
-            elif category in ('SplitTeams', 'ActiveRoster', 'HOF',
-                              'SplitSeason', 'Rookies'):
+            elif category in self.selection_types['Checkbox']:
                 self.click_checkbox(category, option)
-                if 'Button' in self.selectors[category]:
-                    self.webdriver.click_button(self.selectors[category])
-            print(f'{category} set to {option}')
+            if 'Button' in self.selectors[category]:
+                self.webdriver.click_button(self.selectors[category])
 
     def refresh_options(self):
         res = requests.get(self.webdriver.current_url)
@@ -229,8 +185,8 @@ class Leaderboards:
                 (By.LINK_TEXT, "Export Data")
                 )
             ).click()
-        if os.path.exists(os.path.join(os.getcwd(), self.name)):
-            os.remove(os.path.join(os.getcwd(), self.name))
+        if os.path.exists(os.path.join(os.getcwd(), self.new)):
+            os.remove(os.path.join(os.getcwd(), self.new))
         os.rename(
             os.path.join(os.getcwd(), self.original),
-            os.path.join(os.getcwd(), self.name))
+            os.path.join(os.getcwd(), self.new))
