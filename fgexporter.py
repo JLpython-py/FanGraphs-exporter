@@ -1,10 +1,13 @@
 #! python3
+# fgexporter.py
 
 import datetime
 import logging
 import os
 import webbrowser
 
+import bs4
+import requests
 import selenium
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
@@ -48,7 +51,11 @@ class WebDriver:
                 self.browser = os.path.join(path, 'firefox.exe')
                 browser_discovered = True
                 break
-
+        options = '\t- '+'\n\t- '.join(browser_options)
+        if not browser_discovered:
+            raise Exception(f"""
+Firefox executable could not be found in any of the following locations:
+{options}""")
         driver_options = (
             os.getcwd(), user, programs,
             os.path.join(programs, 'Python', 'Python38-32'),
@@ -60,36 +67,11 @@ class WebDriver:
                 self.driver = os.path.join(path, 'geckodriver.exe')
                 driver_discovered = True
                 break
-
-        if not browser_discovered or not driver_discovered:
-            if not browser_discovered and not driver_discovered:
-                print('''
-Firefox executable could not be found in any of the following locations:
-''', file=sys.stderr)
-                [print(opt, file=sys.stderr) for opt in browser_options]
-                print('''
+        options = '\t- '+'\n\t- '.join(driver_options)
+        if not driver_discovered:
+            raise Exception(f"""
 Geckodriver executable could not be found in any of the following locations:
-''', file=sys.stderr)
-                [print(opt, file=sys.stderr) for opt in driver_options]
-                print()
-                raise Exception(
-                    'firefox.exe and geckodriver.exe could not be found')
-            elif not browser_discovered:
-                print('''
-Firefox executable could not be found in any of the following locations:
-''', file=sys.stderr)
-                [print(opt, file=sys.stderr) for opt in browser_options]
-                print()
-                raise Exception(
-                    'firefox.exe could not be found')
-            elif not driver_discovered:
-                print('''
-Geckodriver executable could not be found in any of the following locations:
-''', file=sys.stderr)
-                [print(opt, file=sys.stderr) for opt in driver_options]
-                print()
-                raise Exception(
-                    'geckodriver.exe could not be found')
+{options}""")
 
 class Leaderboards:
     def __init__(self):
