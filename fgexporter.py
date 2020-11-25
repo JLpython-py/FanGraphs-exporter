@@ -4,6 +4,7 @@
 import datetime
 import logging
 import os
+import uuid
 import webbrowser
 
 import bs4
@@ -124,11 +125,26 @@ Geckodriver executable could not be found in any of the following locations:
         except:
             self.webdriver.execute_script("arguments[0].click();", popup)
 
+class Projections:
+    def __init__(self):
+        self.base = "https://www.fangraphs.com/projections.aspx"
+        self.original = 'FanGraphs Leaderboard.csv'
+        self.name = f"{str(uuid.uuid4()}.csv"
+        self.selectors = {
+            'Stats': {'Options': 'ProjectionBoard1_tsStats'},
+            'Position': {'Options': 'ProjectionBoard1_tsPosition'},
+            'Team': {'Dropdown': 'ProjectionBoard1_rcbTeam',
+                     'Options': 'ProjectionBoard1_rcbTeam_DropDown'},
+            'League': {'Dropdown': 'ProjectionBoard1_rcbLeague',
+                       'Options': 'ProjectionBoard1_rcbLeague_DropDown'},
+            'Projection': {'Options': 'ProjectionBoard1_tsProj'},
+            'Update': {'Options': 'ProjectionBoard1_tsUpdate'}}
+
 class Leaderboards:
     def __init__(self):
         self.base = 'https://www.fangraphs.com/leaders.aspx'
         self.original = 'FanGraphs Leaderboard.csv'
-        self.name = datetime.datetime.now().strftime('%y%m%d %H.%M.%S')+'.csv'
+        self.name = f"{str(uuid.uuid4())}.csv"
         self.selectors = {
             'Group': {'Options': 'LeaderBoard1_tsGroup'},
             'Stats': {'Options': 'LeaderBoard1_tsStats'},
