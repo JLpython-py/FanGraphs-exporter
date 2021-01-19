@@ -70,7 +70,7 @@ class WebDriver:
 class FanGraphs:
     def __init__(self, *, setting):
         self.original = 'FanGraphs Leaderboard.csv'
-        self.new = f"{str(uuid.uuidr())}.csv"
+        self.new = f"{str(uuid.uuid4())}.csv"
         with open(f"docs\BaseAddress.txt") as jsonfile:
             base_address = json.load(jsonfile)
         with open(f"docs\Selectors.txt") as jsonfile:
