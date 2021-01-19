@@ -36,17 +36,26 @@ class TestNavigateFanGraphsWebsite(unittest.TestCase):
             "LeaderBoard1_cmdCSV")
         self.assertEqual(export_data_button.text, "Export Data")
 
-        #User notices advertisement covering page and 'X' button to close it
-        close_ad_button = self.browser.find_element_by_css_selector(
-            "span[class='ezmob-footer-close']")
-        self.assertEqual(close_ad_button.text, "x")
+        try:
+            #User notices advertisement covering page and 'x' button to close it
+            close_ad_button = self.browser.find_element_by_css_selector(
+                "span[class='ezmob-footer-close']")
+            self.assertEqual(close_ad_button.text, "x")
 
-    '''
-    def test_predictions_page(self):
+            #User clicks 'x' button and the ad disappears
+            ad_element = self.browser.find_element_by_id(
+                "ezmobfooter")
+            self.assertEqual(ad_element.get_attribute("style"), '')
+            close_ad_button.click()
+            self.assertNotEqual(add_element.get_attribute("style"), '')
+        except:
+            pass
+
+    def predictions_page(self):
         with open('data\\base_address.txt') as file:
             self.browser.get(json.load(file).get("Projections"))
         self.assertIn("Projections", self.browser.title)
-    '''
+
 
 if __name__ == '__main__':
     unittest.main()
