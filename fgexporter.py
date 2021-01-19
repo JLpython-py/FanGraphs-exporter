@@ -5,7 +5,6 @@ import datetime
 import logging
 import os
 import uuid
-import webbrowser
 
 import bs4
 import requests
@@ -21,58 +20,90 @@ from selenium.webdriver.support.ui import WebDriverWait
 CURRENT_TIME = datetime.datetime.now()
 CURRENT_YEAR = CURRENT_TIME.strftime('%Y')
 
-logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
 class WebDriver:
     def __init__(self):
-        self.find_executables()
-        self.preferences = {
-            "browser.download.folderList": 2,
-            "browser.download.manager.showWhenStarting": True,
-            "browser.download.dir": os.getcwd(),
-            "browser.helperApps.neverAsk.saveToDisk": "text/csv"}
-        self.options = Options()
-        self.options.headless = True
-        self.options.binary = self.browser
-        for pref in self.preferences:
-            self.options.set_preference(pref, self.preferences.get(pref))
-        self.webdriver = selenium.webdriver.Firefox(
-           options=self.options,
-           firefox_binary=self.browser,
-           executable_path=self.driver)
+        self.get_possible_paths()
+        self.executables = {}
+        self.find_executable('Firefox')
+        self.find_executable('Geckodriver')
+        self.webdriver_setup()
 
-    def find_executables(self):
+    def get_possible_paths(self):
         user = os.path.expanduser('~')
         programs = os.path.join(user, 'AppData', 'Local', 'Programs')
+        self.options = {
+            'Firefox': [
+                r"C:\Program Files\Mozilla Firefox"],
+            'Geckodriver': [
+                os.getcwd(), user, programs,
+                os.path.join(programs, 'Python', 'Python38-32'),
+                os.path.join(programs, 'Python', 'Python38-32', 'Scripts'),
+                os.path.join(programs, 'Python', 'Python38-32', 'Lib')]}
 
-        browser_options = (
-            r"C:\Program Files\Mozilla Firefox",)
-        browser_discovered = False
-        for path in browser_options:
-            if os.path.exists(os.path.join(path, 'firefox.exe')):
-                self.browser = os.path.join(path, 'firefox.exe')
-                browser_discovered = True
+    def find_executable(self, name):
+        file = f"{name.lower()}.exe"
+        destination = None
+        for location in self.options[name]:
+            destination = os.path.join(location, file)
+            if os.path.exists(destination):
                 break
-        options = '\t- '+'\n\t- '.join(browser_options)
-        if not browser_discovered:
-            raise Exception(f"""
-Firefox executable could not be found in any of the following locations:
-{options}""")
-        driver_options = (
-            os.getcwd(), user, programs,
-            os.path.join(programs, 'Python', 'Python38-32'),
-            os.path.join(programs, 'Python', 'Python38-32', 'Scripts'),
-            os.path.join(programs, 'Python', 'Python38-32', 'Lib'))
-        driver_discovered = False
-        for path in driver_options:
-            if os.path.exists(os.path.join(path, 'geckodriver.exe')):
-                self.driver = os.path.join(path, 'geckodriver.exe')
-                driver_discovered = True
-                break
-        options = '\t- '+'\n\t- '.join(driver_options)
-        if not driver_discovered:
-            raise Exception(f"""
-Geckodriver executable could not be found in any of the following locations:
-{options}""")
+        self.executables[file] = destination
+
+    def webdriver_setup(self):
+        preferences = {
+            "browser.download.folderList": 2,
+            "browser.download.manager.showWhenStarting": False,
+            "browser.download.dir": os.getcwd(),
+            "browser.helperApps.neverAsk.saveToDisk": "text/csv"}
+        options = Options()
+        options.headless = True
+        #options.binary = self.executables['Firefox']
+        for pref in preferences:
+            options.set_preference(pref, preferences.get(pref))
+        self.webdriver = selenium.webdriver.Firefox(
+           options=options,
+           firefox_binary=self.executables['Firefox'],
+           executable_path=self.executables['Geckodriver'])
+
+class FanGraphs:
+    def __init__(self, *, setting):
+        self.original = 'FanGraphs Leaderboard.csv'
+        self.new = f"{str(uuid.uuid4())}.csv"
+        with open(f"docs\BaseAddress.txt") as jsonfile:
+            base_address = json.load(jsonfile)
+        with open(f"docs\Selectors.txt") as jsonfile:
+            selectors = json.load(jsonfile)
+        with open(f"docs\SelectionTypes.txt") as jsonfile:
+            selection_types = json.load(jsonfile)
+
+        self.base = base_address.get(setting)
+        self.selectors = selectors.get(setting)
+        self.selection_types = selection_types.get(setting)
+        self.options = {}
+        self.init_webdriver = WebDriver()
+        self.webdriver = self.init_webdriver.webdriver
+        self.webdriver.get(self.base)
+
+    def config(self, **kwargs):
+        arguments = locals().get('kwargs')
+        for (category, option) in arguments.items():
+            self.refresh_options()
+            try:
+                self.webdriver.clear_popup()
+            except:
+                pass
+            if category in self.selection_types['Table']:
+                index = list(self.options[category]).index(option)
+                self.webdriver.click_table(self.selectors[category], index)
+            elif category in self.selection_types['Dropdown']:
+                index = list(self.options[category]).index(option)
+                self.webdriver.click_dropdown(self.selectors[category], index)
+            elif category in self.selection_types['Checkbox']:
+                self.click_checkbox(category, option)
+            if 'Button' in self.selectors[category]:
+                self.webdriver.click_button(self.selectors[category])
 
     def click_table(self, selectors, index):
         div_li = selectors.get('Options')
@@ -124,44 +155,6 @@ Geckodriver executable could not be found in any of the following locations:
             popup.click()
         except:
             self.webdriver.execute_script("arguments[0].click();", popup)
-
-class FanGraphs:
-    def __init__(self, *, setting):
-        self.original = 'FanGraphs Leaderboard.csv'
-        self.new = f"{str(uuid.uuidr())}.csv"
-        with open(f"docs\BaseAddress.txt") as jsonfile:
-            base_address = json.load(jsonfile)
-        with open(f"docs\Selectors.txt") as jsonfile:
-            selectors = json.load(jsonfile)
-        with open(f"docs\SelectionTypes.txt") as jsonfile:
-            selection_types = json.load(jsonfile)
-
-        self.base = base_address.get(setting)
-        self.selectors = selectors.get(setting)
-        self.selection_types = selection_types.get(setting)
-        self.options = {}
-        self.init_webdriver = WebDriver()
-        self.webdriver = self.init_webdriver.webdriver
-        self.webdriver.get(self.base)
-
-    def config(self, **kwargs):
-        arguments = locals().get('kwargs')
-        for (category, option) in arguments.items():
-            self.refresh_options()
-            try:
-                self.webdriver.clear_popup()
-            except:
-                pass
-            if category in self.selection_types['Table']:
-                index = list(self.options[category]).index(option)
-                self.webdriver.click_table(self.selectors[category], index)
-            elif category in self.selection_types['Dropdown']:
-                index = list(self.options[category]).index(option)
-                self.webdriver.click_dropdown(self.selectors[category], index)
-            elif category in self.selection_types['Checkbox']:
-                self.click_checkbox(category, option)
-            if 'Button' in self.selectors[category]:
-                self.webdriver.click_button(self.selectors[category])
 
     def refresh_options(self):
         res = requests.get(self.webdriver.current_url)
