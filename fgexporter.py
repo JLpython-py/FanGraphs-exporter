@@ -6,8 +6,6 @@ import json
 import logging
 import os
 
-import bs4
-import requests
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
@@ -25,12 +23,8 @@ logging.basicConfig(
     level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
 
 class WebDriver:
-    def __init__(self):
-        self.options = self.get_possible_paths()
-        self.executables = {}
-        self.find_executable('Firefox')
-        self.find_executable('Geckodriver')
 
+    def __init__(self):
         preferences = {
             "browser.download.folderList": 2,
             "browser.download.manager.showWhenStarting": False,
@@ -43,52 +37,30 @@ class WebDriver:
         self.browser = webdriver.Firefox(
            options=options)
 
-    def get_possible_paths(self):
-        user = os.path.expanduser('~')
-        programs = os.path.join(user, 'AppData', 'Local', 'Programs')
-        options = {
-            'Firefox': [
-                r"C:\Program Files\Mozilla Firefox"],
-            'Geckodriver': [
-                os.getcwd(), user, programs,
-                os.path.join(programs, 'Python', 'Python38-32'),
-                os.path.join(programs, 'Python', 'Python38-32', 'Scripts'),
-                os.path.join(programs, 'Python', 'Python38-32', 'Lib')]}
-        return options
-
-    def find_executable(self, name):
-        file = f"{name.lower()}.exe"
-        destination = None
-        for location in self.options[name]:
-            destination = os.path.join(location, file)
-            if os.path.exists(destination):
-                break
-        self.executables[file] = destination
+class InvalidSettingError(Exception):
+    ''' Raised when the setting argument of __init__ is invalid
+'''
+    def __init__(self, setting):
+        self.message = f"Invalid setting passed, '{setting}'"
+        super().__init__(self.message)
 
 class FanGraphs:
     def __init__(self, *, setting):
         directory = setting.lower()
         if directory not in os.listdir('data'):
-            raise self.InvalidSettingError(directory)
+            raise InvalidSettingError(directory)
         with open(os.path.join('data', 'base_address.txt')) as file:
             address = json.load(file).get('leaders')
 
-        options = ['table', 'dropdown', 'checkbox', 'button']
-        self.options = {}
+        options = ['menu', 'dropdown', 'checkbox', 'button']
+        self.selectors = {}
         for opt in options:
             with open(os.path.join('data', directory, f'{opt}.txt')) as file:
-                self.options.setdefault(opt, json.load(file))
+                self.selectors.setdefault(opt, json.load(file))
 
         self.webdriver = WebDriver()
         self.browser = self.webdriver.browser
         self.browser.get(address)
-
-    class InvalidSettingError(Exception):
-        ''' Raised when the setting argument of __init__ is invalid
-'''
-        def __init__(self, setting):
-            self.message = f"Invalid setting passed: {setting}"
-            super().__init__(self.message)
 
     class InvalidCategoryError(Exception):
         ''' Raised when the category argument of listopts is invalid
@@ -98,23 +70,39 @@ class FanGraphs:
             self.message = f"Invalid category passed: {category}."
             super().__init__(self.message)
 
-    def listopts(self, category):
+    def get_options(self, category):
         category = category.lower()
-        if not any([category in self.options[o] for o in self.options]):
+        if not any([category in self.selectors[o] for o in self.selectors]):
             raise self.InvalidCategoryError(category)
-        res = requests.get(self.browser.current_url)
-        res.raise_for_status()
-        soup = bs4.BeautifulSoup(res.text, "html.parser")
-        if category in self.options['dropdown']:
+        if category in self.selectors['dropdown']:
             elems = self.browser.find_elements_by_css_selector(
-                f"div[id={self.options['dropdown'][category]}] li")
+                f"div[id={self.selectors['dropdown'][category]}] li")
             return [elem.text for elem in elems]
-        elif category in self.options['table']:
+        elif category in self.selectors['menu']:
             elems = self.browser.find_elements_by_css_selector(
-                f"div[id={self.options['dropdown'][category]}] li")
+                f"div[id={self.selectors['menu'][category]}] li")
             return [elem.text for elem in elems]
-        elif category in self.options['checkbox']:
+        elif category in self.selectors['checkbox']:
             return [True, False]
+
+    def get_current(self, category):
+        category = category.lower()
+        if not any([category in self.selectors[o] for o in self.selectors]):
+            raise self.InvalidCategoryError(category)
+        if category in self.selectors['dropdown']:
+            elem = self.browser.find_element_by_css_selector(
+                f"div[id={self.selectors['menu'][category]}] input")
+            return elem.get_attribute("value")
+        elif category in self.selectors['menu']:
+            elems = self.browser.find_elements_by_css_selector(
+                f"div[id={self.selectors['menu'][category]}] a")
+            for elem in elems:
+                if "rtsSelected" in elem.get_attribute("class"):
+                    return elem.text
+        elif category in self.selectors['checkbox']:
+            elem = self.browser.find_element_by_css_selector(
+                f"input[id={self.selectors['checkbox'][category]}")
+            return elem.get_attribute("checked") == "checked"
         
     def config(self, **kwargs):
         for (category, option) in kwargs.items():
