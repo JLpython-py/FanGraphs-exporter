@@ -50,7 +50,7 @@ class FanGraphs:
         if directory not in os.listdir('data'):
             raise InvalidSettingError(directory)
         with open(os.path.join('data', 'base_address.txt')) as file:
-            address = json.load(file).get('leaders')
+            self.address = json.load(file).get('leaders')
 
         options = ['menu', 'dropdown', 'checkbox', 'button']
         self.selectors = {}
@@ -60,7 +60,7 @@ class FanGraphs:
 
         self.webdriver = WebDriver()
         self.browser = self.webdriver.browser
-        self.browser.get(address)
+        self.browser.get(self.address)
 
     class InvalidCategoryError(Exception):
         ''' Raised when the data configuration category is invalid
@@ -76,6 +76,12 @@ class FanGraphs:
         def __init__(self, category, option):
             self.message = f"Invalid option passed for category {category}: {option}."
             super().__init__(self.message)
+
+    def reset(self):
+        self.browser.get(self.address)
+
+    def location(self):
+        return self.browser.current_url
         
     def get_options(self, category):
         category = category.lower()

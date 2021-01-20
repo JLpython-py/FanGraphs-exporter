@@ -70,7 +70,12 @@ class TestModuleFunctionality(unittest.TestCase):
                     self.assertLogs(
                         logging.DEBUG,
                         f"Successfully submitted {cat} with button")
-            self.fangraphs.reset()
+
+        #User reverts browser to original page
+        self.fangraphs.reset()
+        self.assertEqual(
+            fgexporter.FanGraphs(setting='leaders').location(),
+            self.fangraphs.location())
 
 if __name__ == '__main__':
     unittest.main()
