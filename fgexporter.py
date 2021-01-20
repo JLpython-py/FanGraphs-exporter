@@ -63,16 +63,24 @@ class FanGraphs:
         self.browser.get(address)
 
     class InvalidCategoryError(Exception):
-        ''' Raised when the category argument of listopts is invalid
+        ''' Raised when the data configuration category is invalid
 '''
         
         def __init__(self, category):
             self.message = f"Invalid category passed: {category}."
             super().__init__(self.message)
 
+    class InvalidOptionError(Exception):
+        ''' Raised when the data configuration option is invalid
+'''
+        def __init__(self, category, option):
+            self.message = f"Invalid option passed for category {category}: {option}."
+            super().__init__(self.message)
+        
     def get_options(self, category):
         category = category.lower()
-        if not any([category in self.selectors[o] for o in self.selectors]):
+        if not any([category in self.selectors[s]
+                    for s in self.selectors]):
             raise self.InvalidCategoryError(category)
         if category in self.selectors['dropdown']:
             elems = self.browser.find_elements_by_css_selector(
@@ -87,7 +95,8 @@ class FanGraphs:
 
     def get_current(self, category):
         category = category.lower()
-        if not any([category in self.selectors[o] for o in self.selectors]):
+        if not any([category in self.selectors[s]
+                    for s in self.selectors]):
             raise self.InvalidCategoryError(category)
         if category in self.selectors['dropdown']:
             elem = self.browser.find_element_by_css_selector(
@@ -106,29 +115,39 @@ class FanGraphs:
         
     def config(self, **kwargs):
         for (category, option) in kwargs.items():
-            self.refresh_options()
-            try:
-                self.webdriver.clear_popup()
-            except:
-                pass
+            category, option = category.lower(), option
+            available_options = self.get_options(category)
+            #Verify option is valid
+            if option not in available_options:
+                raise self.InvalidOptionError(category, option)
+            #Verify option is not already set
+            if option == self.get_current(category):
+                logging.debug("%s already set as %s", category, option)
+                return
+            #Set categories to specified options
+            if category in self.selectors['dropdown']:
+                self.set_dropdown(category, option)
+            elif category in self.selectors['menu']:
+                self.set_menu(category, option)
+            elif category in self.selectors['checkbox']:
+                self.set_checkbox(category, option)
+            #Click button to submit form, if necessary
+            if category in self.selectors['button']:
+                self.click_button(category)
 
-    def refresh_options(self):
-        res = requests.get(self.webdriver.current_url)
-        res.raise_for_status()
-        soup = bs4.BeautifulSoup(res.text, features="html.parser")
-        for selector in self.selectors:
-            if 'Options' not in self.selectors[selector]:
-                continue
-            div_id = self.selectors[selector].get('Options')
-            elements = soup.select(f'div[id="{div_id}"] li')
-            self.options[selector] = [e.getText() for e in elements]
-            options = [e.getText() for e in elements]
+    def set_menu(self, category, option):
+        logging.debug("Successfully set %s as %s", category, option)
+
+    def set_dropdown(self, category, option):
+        logging.debug("Successfully set %s as %s", category, option)
+
+    def set_checkbox(self, category, option):
+        logging.debug("Successfully set %s as %s", category, option)
+
+    def click_button(self, category):
+        logging.debug("Successfully submitted %s with button", category)
 
     def export(self):
-        try:
-            self.clear_popup()
-        except:
-            pass
         WebDriverWait(self.webdriver, 20).until(
             expected_conditions.element_to_be_clickable(
                 (By.LINK_TEXT, "Export Data")
