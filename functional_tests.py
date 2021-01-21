@@ -1,20 +1,20 @@
 #! python3
 # functional_tests.py
 
-import logging
+import os
 import unittest
 
 import fgexporter
 
 class TestModuleFunctionality(unittest.TestCase):
-        
-    def test_set_setting_to_leaders(self):
-        #User triggers fgexporter.InvalidSettingError
+
+    def test_invalid_setting_raises_error(self):
         self.assertRaises(
             fgexporter.InvalidSettingError,
             fgexporter.FanGraphs,
             setting='')
 
+    def test_set_setting_to_leaders(self):
         #User sets FanGraphs search to leaders
         self.fangraphs = fgexporter.FanGraphs(setting="leaders")
 
@@ -30,11 +30,16 @@ class TestModuleFunctionality(unittest.TestCase):
             "active_roster": 2, "hof": 2, "position": 13, "season": 150,
             "split": 67, "min": 60, "split_season": 2, "rookies": 2,
             "season1": 150, "season2": 150, "age1": 45, "age2": 45}
-        for opt in num_options:
+        for cat in num_options:
             self.assertEqual(
-                len(self.fangraphs.get_options(opt)),
-                num_options[opt],
-                opt)
+                len(self.fangraphs.get_options(cat)),
+                num_options[cat],
+                cat)
+            self.assertTrue(
+                all([
+                    isinstance(o, bool) or bool(o)
+                    for o in self.fangraphs.get_options(cat)]),
+                self.fangraphs.get_options(cat))
 
         #User checks which options are currently selected
         sel_options = {
@@ -44,38 +49,19 @@ class TestModuleFunctionality(unittest.TestCase):
             "split": "Full Season", "min": "Qualified", "season": "2020",
             "split_season": False, "rookies": False, "season1": "2020",
             "season2": "2020", "age1": "14", "age2": "58"}
-        for opt in sel_options:
+        for cat in sel_options:
             self.assertEqual(
-                self.fangraphs.get_current(opt),
-                sel_options[opt],
-                opt)
+                self.fangraphs.get_current(cat),
+                sel_options[cat],
+                cat)
 
-        #User configures data results
-        categories = [
-            'group', 'stats', 'league', 'team', 'split_teams',
-            'active_roster', 'hof', 'position', 'split', 'min', 'season',
-            'split_season', 'rookies', 'season1', 'season2', 'age1', 'age2']
-        for cat in categories:
-            options = self.fangraphs.get_options(cat)
-            for opt in options:
-                self.fangraphs.config(**{cat: opt})
-                if opt == self.fangraphs.get_current(cat):
-                    self.assertLogs(
-                        logging.DEBUG,
-                        f"{cat} already set as {opt}")
-                self.assertLogs(
-                    logging.DEBUG,
-                    f"Sucessfully set {cat} as {opt}")
-                if cat in self.fangraphs.selectors['button']:
-                    self.assertLogs(
-                        logging.DEBUG,
-                        f"Successfully submitted {cat} with button")
+        #User exports data on page
+        self.fangraphs.export()
+        self.assertTrue(os.path.exists(self.fangraphs.filenames[1]))
 
-        #User reverts browser to original page
-        self.fangraphs.reset()
-        self.assertEqual(
-            fgexporter.FanGraphs(setting='leaders').location(),
-            self.fangraphs.location())
+        self.fangraphs.end_task()
+
+        os.remove(self.fangraphs.filenames[1])
 
 if __name__ == '__main__':
     unittest.main()

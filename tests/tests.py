@@ -9,7 +9,21 @@ import selenium
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
-class TestFanGraphsLeadersPage(unittest.TestCase):
+class TestClassFanGraphs(unittest.TestCase):
+
+    def test_files_exist(self):
+        directories = {
+            'leaders': [
+                'menu.txt', 'dropdown.txt', 'checkbox.txt', 'button.txt']
+            }
+        for dirname in directories:
+            self.assertTrue(
+                os.path.exists(os.path.join('data', dirname)))
+            self.assertEqual(
+                os.listdir(os.path.join('data', dirname)),
+                directories[dirname])
+
+class TestFanGraphsLeadersSettings(unittest.TestCase):
 
     def setUp(self):
         with open(os.path.join('data', 'base_address.txt')) as file:
@@ -25,10 +39,9 @@ class TestFanGraphsLeadersPage(unittest.TestCase):
         self.browser.get(self.url)
         self.assertIn("Leaderboards", self.browser.title)
 
-    def test_elements_on_page(self):
+    def test_find_data_configuration_elements(self):
         self.browser.get(self.url)
-        #Check data configuration elements
-        files = ['table.txt', 'dropdown.txt', 'checkbox.txt', 'button.txt']
+        files = ['menu.txt', 'dropdown.txt', 'checkbox.txt', 'button.txt']
         for filename in files:
             with open(os.path.join('data', 'leaders', filename)) as file:
                 data = json.load(file)
@@ -36,7 +49,15 @@ class TestFanGraphsLeadersPage(unittest.TestCase):
                     self.assertEqual(
                         len(self.browser.find_elements_by_id(data[select])),
                         1, data[select])
-        #Check ad popup elements
+
+    def test_find_export_data_elements(self):
+        self.browser.get(self.url)
+        export_data_button = self.browser.find_element_by_id(
+            "LeaderBoard1_cmdCSV")
+        self.assertEqual(export_data_button.text, "Export Data")
+
+    def test_find_popup_elements(self):
+        self.browser.get(self.url)
         while True:
             try:
                 close_popup_button = self.browser.find_element_by_css_selector(
@@ -50,10 +71,6 @@ class TestFanGraphsLeadersPage(unittest.TestCase):
         self.assertEqual(popup.get_attribute("style"), "")
         close_popup_button.click()
         self.assertNotEqual(popup.get_attribute("style"), "")
-        #Check 'Export Data' button elements
-        export_data_button = self.browser.find_element_by_id(
-            "LeaderBoard1_cmdCSV")
-        self.assertEqual(export_data_button.text, "Export Data")
 
 if __name__ == '__main__':
     unittest.main()
