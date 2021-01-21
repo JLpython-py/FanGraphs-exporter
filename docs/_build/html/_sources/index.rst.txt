@@ -13,10 +13,9 @@ Welcome to the FanGraphs-exporter documentation!
 
 FanGraphs-exporter is completely open-source.
 
-See this project's `GitHub Repository`_. See the `latest release`_.
+See this project's `GitHub Repository`_.
 
 .. _GitHub Repository: https://github.com/JLpython-py/FanGraphs-exporter
-.. _latest release: https://github.com/JLpython-py/FanGraphs-exporter/releases
 
 =============
 API Reference
