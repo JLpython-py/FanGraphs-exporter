@@ -1,0 +1,1 @@
+{"leaders": "https://www.fangraphs.com/leaders.aspx", "projections": "https://www.fangraphs.com/projections.aspx"}
