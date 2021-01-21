@@ -1,77 +1,29 @@
-# FanGraphs-exporter
-FanGraphs is a well-known database among the baseball world filled with metrics concerning every aspect of baseball which you can imagine. These pages contain a large set of filters which allow the user to specify exactly what they are looking for. Often times, an **Export Data** is available which downloads the current data as a CSV file. 
+<h1>FanGraphs-exporter</h1>
 
-FanGraphs-exporter automates these tasks, allowing the user to quickly specify the filters and download the data very quickly. Since not all of the pages contain the **Export Data** option, FanGraphs-exporter is being constantly updated so that, in the near future, users will also be able to export data without the option.
+![GitHub repo size](https://img.shields.io/github/repo-size/JLpython-py/FanGraphs-exporter)
+![GitHub last commit](https://img.shields.io/github/last-commit/JLpython-py/FanGraphs-exporter)
+![GitHub](https://img.shields.io/github/license/JLpython-py/FanGraphs-exporter)
 
-## Terminology
-[FanGraphs homepage](https://fangraphs.com)
+[FanGraphs](https://fangraphs.com) is an extremely expansive database of baseball statistics. Some of the pages, often the ones with the most number of available statistics, allow the user to configure the data which is outputted. The pages may also contain an **Export Data** button which allows the user to download the current data as a CSV file. FanGraphs-exporter attempts to automate the tasks of configuring the data and exporting it, allowing the user to export large quantities of data in a short period of time. The goal of this repository is to allow users to be able to export as much data from the FanGraphs website as possible.
 
-The term _Compatible Pages_ is used to describe web pages which can be exported using FanGraphs-exporter
+<h1>Installation</h1>
 
-Compatible Pages:
-* Projections:
-  * Pre-Season Projections
-  * 600 PA/200 IP Projections
-  * Updated In-Season Projections
-  * 3 Year Projections
-* Leaders:
-  * Major League Leaders
-  * KBO Leaders
-  * Minor League Leaders
-  * WAR Tools
-* Prospects:
-  * Prospects Home
+[Download the latest release here](https://github.com/JLpython-py/FanGraphs-exporter/releases)
 
-## Projections
-[FanGraphs Projections](https://fangraphs.com/projections.aspx)
-### Configurations
-Available Categories to Configure:
-* Stats
-* Position
-* Team
-* League
-* Projection
-* Update
-### Basic Usage
-```
+<h1>Requirements</h1>
+
+- Python v3.6+
+- geckodriver v0.29.0
+- selenium v3.141.0
+
+Install all requirements: `pip install -r requirements.txt`
+
+<h1>Basic Usage</h1>
+
+```python
 import fgexporter
-exporter = fgexporter.FanGraphs(setting="Projections")
-exporter.name = "Sample Projection.csv"
-exporter.config(Stats="Batting", Team="Dodgers")
-exporter.export()
-exporter.webdriver.quit()
-```
 
-## Leaders
-[FanGraphs Leaderboards](https://fangraphs.com/leaders.aspx)
-## Configurations
-Available Categories to Configure:
-* Group
-* Stats
-* League
-* Team
-* Split Teams
-* Active Roster
-* HOF
-* Position
-* Single Season
-* Split
-* Min
-* Split Seasons
-* Rookies
-* Season 1, Season 2
-* Age 1, Age 2
-## Basic Usage
-```
-import fgexporter
-exporter = fgexporter.FanGraphs(setting="Leaders")
-exporter.name = "Sample Leader.csv"
-exporter.config(Group="Team Stats", Position="SS", SingleSeason=2017)
+exporter = fgexporter.FanGraphs(setting="leaders")
 exporter.export()
-exporter.webdriver.quit()
+exporter.end_task()
 ```
-
-## Prospects
-[FanGraphs Leaderboards](https://fangraphs.com/prospects.aspx)
-### Configurations
-### Basic Usage
