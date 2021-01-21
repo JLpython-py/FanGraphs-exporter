@@ -3,7 +3,6 @@
 
 import datetime
 import json
-import logging
 import os
 
 import selenium
@@ -15,10 +14,6 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format=' %(asctime)s - %(levelname)s - %(message)s')
 
 class WebDriver:
     '''
@@ -83,7 +78,6 @@ class FanGraphs:
     def reset(self):
         '''
 '''
-        logging.debug("Reset browser to initial address")
         self.browser.get(self.address)
 
     def location(self):
@@ -94,7 +88,6 @@ class FanGraphs:
     def end_task(self):
         '''
 '''
-        logging.debug("Quit browser")
         self.browser.quit()
 
     def get_options(self, category):
@@ -144,7 +137,6 @@ class FanGraphs:
         '''
 '''
         for (category, option) in kwargs.items():
-            logging.debug("Configure %s to %s", category, option)
             category, option = category.lower(), option
             available_options = self.get_options(category)
             #Verify option is valid
@@ -152,7 +144,6 @@ class FanGraphs:
                 raise self.InvalidOptionError(category, option)
             #Verify option is not already set
             if option == self.get_current(category):
-                logging.debug("%s already set as %s", category, option)
                 return
             #Set categories to specified options
             if category in self.selectors['dropdown']:
@@ -182,7 +173,6 @@ class FanGraphs:
             f"div[id={self.selectors['menu'][category]}] li")
         opt_elem = elems[available_options.index(option)]
         self.force_click(opt_elem)
-        logging.debug("%s set to %s", category, option)
 
     def set_dropdown(self, category, option):
         '''
@@ -195,7 +185,6 @@ class FanGraphs:
             f"div[id={self.selectors['dropdown'][category]}] li")
         opt_elem = elems[available_options.index(option)]
         self.force_click(opt_elem)
-        logging.debug("%s set to %s", category, option)
 
     def set_checkbox(self, category, option):
         '''
@@ -203,7 +192,6 @@ class FanGraphs:
         elem = self.browser.find_element_by_css_selector(
             f"input[id={self.selectors['checkbox'][category]}")
         self.force_click(elem)
-        logging.debug("%s set to %s", category, option)
 
     def click_button(self, category, option):
         '''
@@ -211,7 +199,6 @@ class FanGraphs:
         elem = self.browser.find_element_by_css_selector(
             f"input[id={self.selectors['button'][category]}")
         self.force_click(elem)
-        logging.debug("Submit request to set %s to %s", category, option)
 
     def export(self):
         '''
@@ -234,4 +221,3 @@ class FanGraphs:
         os.rename(
             os.path.join(os.getcwd(), self.filenames[0]),
             os.path.join(os.getcwd(), self.filenames[1]))
-        logging.debug("Saved as %s" % self.filenames[1])
