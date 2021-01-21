@@ -10,7 +10,6 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
@@ -24,12 +23,12 @@ class WebDriver:
             "browser.download.manager.showWhenStarting": False,
             "browser.download.dir": os.getcwd(),
             "browser.helperApps.neverAsk.saveToDisk": "text/csv"}
-        options = Options()
-        options.headless = True
+        self.options = Options()
+        self.options.headless = True
         for pref in preferences:
-            options.set_preference(pref, preferences.get(pref))
+            self.options.set_preference(pref, preferences.get(pref))
         self.browser = webdriver.Firefox(
-           options=options)
+           options=self.options)
 
 class InvalidSettingError(Exception):
     ''' Raised when the setting argument of __init__ is invalid
