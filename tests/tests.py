@@ -20,8 +20,8 @@ class TestClassFanGraphs(unittest.TestCase):
             self.assertTrue(
                 os.path.exists(os.path.join('data', dirname)))
             self.assertEqual(
-                os.listdir(os.path.join('data', dirname)),
-                directories[dirname])
+                set(os.listdir(os.path.join('data', dirname))),
+                set(directories[dirname]))
 
 class TestFanGraphsLeadersSettings(unittest.TestCase):
 
