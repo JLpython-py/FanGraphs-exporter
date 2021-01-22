@@ -13,66 +13,118 @@ Welcome to the FanGraphs-exporter documentation!
 
 FanGraphs-exporter is completely open-source.
 
-See this project's `GitHub Repository`_.
+See this project's `GitHub Repository`_. See the `latest release`_.
 
 .. _GitHub Repository: https://github.com/JLpython-py/FanGraphs-exporter
+.. _latest release: https://github.com/JLpython-py/FanGraphs-exporter/releases
 
 =============
 API Reference
 =============
 
+
 .. py:class:: class WebDriver(self):
 
-This is called by ``FanGraphs`` in ``__init__`` to create the ``self.webdriver`` attribute.
-The attribute ``self.options`` holds the options returned when calling ``selenium.webdriver.firefox.options``.
-The defaults in ``self.options`` are listed below:
+	.. py:attribute:: options
+	
+		The options returned after calling :py:func:`selenium.webdriver.firefox.options.Options`
+		The default options used:
 
-	* ``self.options.headless``: ``True``
-	* ``self.options.preferences``: 
-
-		* ``"browser.download.folderList"``: 2
-		* ``"browser.download.manager.showWhenStarting"``: ``False``
-		* ``"browser.download.dir"``: ``os.getcwd()``
-		* ``"browser.helperApps.neverAsk.saveToDisk"``: ``"text/csv"``
+			* ``self.options.headless``: ``True``
+			* ``self.options.preferences``: 
+	
+				* ``"browser.download.folderList"``: 2
+				* ``"browser.download.manager.showWhenStarting"``: ``False``
+				* ``"browser.download.dir"``: ``os.getcwd()``
+				* ``"browser.helperApps.neverAsk.saveToDisk"``: ``"text/csv"``
 
 .. py:class:: class FanGraphs(self, *, setting)
 
-Below are the compatible FanGraphs pages with the corresponding ``setting`` argument:
+	:param str setting: The setting string which corresponds to the FanGraphs page
 	
-	* `Major League Leaderboards`_: ``"leaders"``
-	* `Projections`_: ``"projections"``
-	
-	.. _Major League Leaderboards: https://fangraphs.com/leaders.aspx
-	.. _Projections: https://fangraphs.com/projections.aspx
+		+---------------------------+----------------------------------+
+		| **FanGraphs Page Title**  | **Corresponding setting string** |
+		+---------------------------+----------------------------------+
+		| Major League Leaderboards | 'leaders'                        |
+		+---------------------------+----------------------------------+
+		| Projections               | 'projections'                    |
+		+---------------------------+----------------------------------+
 
-Passing an invalid argument to ``setting`` will result in ``fgexporter.InvalidSettingError`` being raised.
+	:raises fgexporter.InvalidSettingError: If the ``setting`` argument is not recognized
 
-	.. py:method:: get_options(self, category)
-	
-	.. py:method:: get_current(self, category)
-	
-	.. py:method:: config(self, **kwargs)
-	
-	While multiple configurations can be passed, it is highly recommended that only one be passed at a time.
-	Certain category configurations block the configurations of other categories.
-	
-	e.g. When 'leaders' is passed to as the ``setting`` argument, configuring **HOF** to `True` prevents configuring **Rookies** to ``True`` at the same time.
-	
-	For this reason, it is best practice to configure one category at a time, while using `FanGraphs.get_current` in between.
-	
-	.. py:method:: reset(self)
-	
-	.. py:method:: location(self)
-	
-	Returns the ``current_url`` attribute of ``FanGraphs.browser``.
-	This is the equivalent of using ``FanGraphs.browser.current_url``
-	
-	.. py:method:: end_task(self)
-	
-	Calls the ``quit`` method of ``FanGraphs.browser``.
-	This is the equivalent of calling ``FanGraphs.browser.quit()``
+		.. py:attribute:: address
+		
+			The URL which corresponds to the original FanGraphs page.
+		
+			+---------------------------+-------------------------------------------+
+			| **FanGraphs Page Title**  | **Corresponding URL**                     |
+			+---------------------------+-------------------------------------------+
+			| Major League Leaderboards | https://fangraphs.com/leaders.aspx        |
+			+---------------------------+-------------------------------------------+
+			| Projections               | https://fangraphs.com/projections.aspx    |
+			+---------------------------+-------------------------------------------+
 
-	.. py:method:: export(self)
+		.. py:attribute:: selectors
+		
+			A dictionary with the CSS selectors for the data configuration category, stored by type.
+		
+		.. py:attribute:: webdriver
+		
+			Holds the :py:class:`WebDriver` instance.
+
+		.. py:attribute:: browser
+
+			References the :py:attr:`browser` attribute of :py:attr:`webdriver`.
+
+	.. py:classmethod:: get_options(self, category)
+	
+		:param str category: The data configuration category
+		:returns: List of valid options for ``category``
+		:rtype: List[Str]
+		:raises fgexporter.FanGraphs.InvalidCategoryError: If ``category`` is not recognized
+	
+	.. py:classmethod:: get_current(self, category)
+	
+		:param str category: The data configuration category
+		:returns: Current option for ``category``
+		:rtype: Str
+		:raises fgexporter.FanGraphs.InvalidCategoryError: If ``category`` is not recognized
+	
+	.. py:classmethod:: config(self, **kwargs)
+	
+		:param kwargs: Data configurations
+		:raises fgexporter.FanGraphs.InvalidCategoryError: If keyword is not recognized
+		:raises fgexporter.FanGraphs.InvalidOptionError: If keyword argument is not recognized
+
+		:Keyword Arguments:
+			
+			category (str): The data configuration option which corresponds to the category
+
+				*Note that the keyword argument name is identical to the corresponding string value.*
+
+	.. py:classmethod:: reset(self)
+	
+		Passes :py:attr:`address` to the :py:func:`get` method of :py:attr:`browser`
+	
+	.. py:classmethod:: location(self)
+	
+		Returns the address that the browser is current at.
+	
+		:return: :py:attr:`current_url` attribute of :py:attr:`browser`
+		:rtype: Str
+	
+	.. py:classmethod:: end_task(self)
+	
+		Calls :py:meth:`quit` method of :py:attr:`browser`
+
+	.. py:classmethod:: export(self)
+	
+		Downloads the configured data as a CSV file to the current working directory.
+		The directory which the file is downloaded to can be altered with the ``"browser.download.dir"`` preference.
+		The file will be named the formatted current time: ``datetime.datetime.now().strftime('%d.%m.%y %H.%M.%S')``
+
+		:returns: Name of exported file
+		:rtype: Str
 
 ==================
 Indices and tables
