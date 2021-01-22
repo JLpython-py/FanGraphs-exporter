@@ -57,8 +57,6 @@ class FanGraphs:
         self.browser = self.webdriver.browser
         self.browser.get(self.address)
 
-        self.filenames = []
-
     class InvalidCategoryError(Exception):
         ''' Raised when the data configuration category is invalid
 '''
@@ -202,7 +200,7 @@ class FanGraphs:
     def export(self):
         '''
 '''
-        self.filenames = [
+        filenames = [
             "FanGraphs Leaderboard.csv",
             f"{datetime.datetime.now().strftime('%d.%m.%y %H.%M.%S')}.csv"]
         while True:
@@ -215,8 +213,10 @@ class FanGraphs:
             except:
                 html = self.browser.find_element_by_css_selector("html")
                 html.send_keys(Keys.PAGE_DOWN)
-        if os.path.exists(os.path.join(os.getcwd(), self.filenames[1])):
-            os.remove(os.path.join(os.getcwd(), self.filenames[1]))
+        if os.path.exists(os.path.join(os.getcwd(), filenames[1])):
+            os.remove(os.path.join(os.getcwd(), filenames[1]))
         os.rename(
-            os.path.join(os.getcwd(), self.filenames[0]),
-            os.path.join(os.getcwd(), self.filenames[1]))
+            os.path.join(os.getcwd(), filenames[0]),
+            os.path.join(os.getcwd(), filenames[1]))
+
+        return filenames[0]
