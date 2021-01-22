@@ -41,34 +41,55 @@
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt>
-<code class="sig-name descname">class WebDriver(self):</code></dt>
+<code class="sig-name descname">class fgexporter.WebDriver</code></dt>
+<dd><dl class="py method">
+<dt id="WebDriver.__init__">
+<em class="property">classmethod </em><code class="sig-prename descclassname">WebDriver.</code><code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#WebDriver.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
-<dt id="options">
-<code class="sig-name descname">options</code><a class="headerlink" href="#options" title="Permalink to this definition">¶</a></dt>
-<dd><p>The options returned after calling <code class="xref py py-func docutils literal notranslate"><span class="pre">selenium.webdriver.firefox.options.Options()</span></code>
-The default options used:</p>
+<dt id="WebDriver.options">
+<code class="sig-name descname">options</code><a class="headerlink" href="#WebDriver.options" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <a class="reference external" href="https://selenium-python.readthedocs.io/api.html#selenium.webdriver.firefox.options.Options">selenium.webdriver.firefox.options.Options</a> object</p>
+</dd>
+</dl>
+<p>The default options used:</p>
 <blockquote>
-<div><ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">self.options.headless</span></code>: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">self.options.preferences</span></code>:</p>
-<blockquote>
-<div><ul class="simple">
+<div><dl class="py attribute">
+<dt>
+<code class="sig-name descname">headless: ``True``</code></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">preferences:</code></dt>
+<dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;browser.download.folderList&quot;</span></code>: 2</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;browser.download.manager.showWhenStarting&quot;</span></code>: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;browser.download.dir&quot;</span></code>: <code class="docutils literal notranslate"><span class="pre">os.getcwd()</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;browser.helperApps.neverAsk.saveToDisk&quot;</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;text/csv&quot;</span></code></p></li>
 </ul>
-</div></blockquote>
-</li>
-</ul>
+</dd></dl>
+
 </div></blockquote>
 </dd></dl>
 
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="InvalidSettingError">
+<em class="property">exception </em><code class="sig-name descname">InvalidSettingError</code><a class="headerlink" href="#InvalidSettingError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when the setting argument of <a class="reference internal" href="#FanGraphs.__init__" title="FanGraphs.__init__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FanGraphs.__init__()</span></code></a> is not recognized</p>
 </dd></dl>
 
 <dl class="py class">
 <dt>
-<code class="sig-name descname">class FanGraphs(self, *, setting)</code></dt>
+<code class="sig-name descname">class fgexporter.FanGraphs</code></dt>
+<dd><dl class="py method">
+<dt id="FanGraphs.__init__">
+<em class="property">classmethod </em><code class="sig-prename descclassname">FanGraphs.</code><code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">setting</span></em><span class="sig-paren">)</span><a class="headerlink" href="#FanGraphs.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>setting</strong> (<em>str</em>) – <p>The setting string which corresponds to the FanGraphs page</p>
@@ -91,12 +112,14 @@ The default options used:</p>
 </table>
 </p>
 </dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>fgexporter.InvalidSettingError</strong> – <p>If the <code class="docutils literal notranslate"><span class="pre">setting</span></code> argument is not recognized</p>
+</dl>
+<p>:raises <code class="xref py py-exc docutils literal notranslate"><span class="pre">fgexporter.InvalidSettingError</span></code>: If the <code class="docutils literal notranslate"><span class="pre">setting</span></code> argument is not recognized</p>
 <dl class="py attribute">
-<dt id="address">
-<code class="sig-name descname">address</code><a class="headerlink" href="#address" title="Permalink to this definition">¶</a></dt>
-<dd><p>The URL which corresponds to the original FanGraphs page.</p>
+<dt id="FanGraphs.address">
+<code class="sig-name descname">address</code><a class="headerlink" href="#FanGraphs.address" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>The URL which corresponds to the initial FanGraphs page</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 39%" />
@@ -114,29 +137,58 @@ The default options used:</p>
 </tr>
 </tbody>
 </table>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="selectors">
 <code class="sig-name descname">selectors</code><a class="headerlink" href="#selectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dictionary with the CSS selectors for the data configuration category, stored by type.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dictionary with the CSS selectors for the data configuration categories, stored by type.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="webdriver">
 <code class="sig-name descname">webdriver</code><a class="headerlink" href="#webdriver" title="Permalink to this definition">¶</a></dt>
-<dd><p>Holds the <code class="xref py py-class docutils literal notranslate"><span class="pre">WebDriver</span></code> instance.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">WebDriver</span></code> instance.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="browser">
 <code class="sig-name descname">browser</code><a class="headerlink" href="#browser" title="Permalink to this definition">¶</a></dt>
-<dd><p>References the <a class="reference internal" href="#browser" title="browser"><code class="xref py py-attr docutils literal notranslate"><span class="pre">browser</span></code></a> attribute of <a class="reference internal" href="#webdriver" title="webdriver"><code class="xref py py-attr docutils literal notranslate"><span class="pre">webdriver</span></code></a>.</p>
-</dd></dl>
-
-</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The <a class="reference internal" href="#browser" title="browser"><code class="xref py py-attr docutils literal notranslate"><span class="pre">browser</span></code></a> attribute of <a class="reference internal" href="#webdriver" title="webdriver"><code class="xref py py-attr docutils literal notranslate"><span class="pre">webdriver</span></code></a>.</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="InvalidCategoryError">
+<em class="property">exception </em><code class="sig-name descname">InvalidCategoryError</code><a class="headerlink" href="#InvalidCategoryError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when the data configuration category is invalid</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="InvalidOptionError">
+<em class="property">exception </em><code class="sig-name descname">InvalidOptionError</code><a class="headerlink" href="#InvalidOptionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when the data configuration option is invalid</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="get_options">
 <em class="property">classmethod </em><code class="sig-name descname">get_options</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">category</span></em><span class="sig-paren">)</span><a class="headerlink" href="#get_options" title="Permalink to this definition">¶</a></dt>
@@ -151,7 +203,7 @@ The default options used:</p>
 <dd class="field-odd"><p>List[Str]</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>fgexporter.FanGraphs.InvalidCategoryError</strong> – If <code class="docutils literal notranslate"><span class="pre">category</span></code> is not recognized</p>
+<dd class="field-even"><p><strong>FanGraphs.InvalidCategoryError</strong> – If <code class="docutils literal notranslate"><span class="pre">category</span></code> is not recognized</p>
 </dd>
 </dl>
 </dd></dl>
@@ -170,7 +222,7 @@ The default options used:</p>
 <dd class="field-odd"><p>Str</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>fgexporter.FanGraphs.InvalidCategoryError</strong> – If <code class="docutils literal notranslate"><span class="pre">category</span></code> is not recognized</p>
+<dd class="field-even"><p><strong>FanGraphs.InvalidCategoryError</strong> – If <code class="docutils literal notranslate"><span class="pre">category</span></code> is not recognized</p>
 </dd>
 </dl>
 </dd></dl>
@@ -184,12 +236,12 @@ The default options used:</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>fgexporter.FanGraphs.InvalidCategoryError</strong> – If keyword is not recognized</p></li>
-<li><p><strong>fgexporter.FanGraphs.InvalidOptionError</strong> – If keyword argument is not recognized</p></li>
+<li><p><strong>FanGraphs.InvalidCategoryError</strong> – If keyword is not recognized</p></li>
+<li><p><strong>FanGraphs.InvalidOptionError</strong> – If keyword argument is not recognized</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p>category (str): The data configuration option which corresponds to the category</p>
+<dd class="field-odd"><p>category (str): The data configuration option which corresponds to the category. Use <a class="reference internal" href="#get_options" title="get_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_options()</span></code></a> to get possible options.</p>
 <blockquote>
 <div><p><em>Note that the keyword argument name is identical to the corresponding string value.</em></p>
 </div></blockquote>
@@ -200,7 +252,7 @@ The default options used:</p>
 <dl class="py method">
 <dt id="reset">
 <em class="property">classmethod </em><code class="sig-name descname">reset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Passes <a class="reference internal" href="#address" title="address"><code class="xref py py-attr docutils literal notranslate"><span class="pre">address</span></code></a> to the <code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code> method of <a class="reference internal" href="#browser" title="browser"><code class="xref py py-attr docutils literal notranslate"><span class="pre">browser</span></code></a></p>
+<dd><p>Passes <code class="xref py py-attr docutils literal notranslate"><span class="pre">address</span></code> to the <a class="reference external" href="https://selenium-python.readthedocs.io/api.html#selenium.webdriver.remote.webdriver.WebDriver.get">get</a> method of <a class="reference internal" href="#browser" title="browser"><code class="xref py py-attr docutils literal notranslate"><span class="pre">browser</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -209,7 +261,7 @@ The default options used:</p>
 <dd><p>Returns the address that the browser is current at.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">current_url</span></code> attribute of <a class="reference internal" href="#browser" title="browser"><code class="xref py py-attr docutils literal notranslate"><span class="pre">browser</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://selenium-python.readthedocs.io/api.html#selenium.webdriver.remote.webdriver.WebDriver.current_url">current_url</a> attribute of <a class="reference internal" href="#browser" title="browser"><code class="xref py py-attr docutils literal notranslate"><span class="pre">browser</span></code></a></p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>Str</p>
@@ -220,7 +272,7 @@ The default options used:</p>
 <dl class="py method">
 <dt id="end_task">
 <em class="property">classmethod </em><code class="sig-name descname">end_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#end_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calls <code class="xref py py-meth docutils literal notranslate"><span class="pre">quit()</span></code> method of <a class="reference internal" href="#browser" title="browser"><code class="xref py py-attr docutils literal notranslate"><span class="pre">browser</span></code></a></p>
+<dd><p>Calls <a class="reference external" href="https://selenium-python.readthedocs.io/api.html#selenium.webdriver.firefox.webdriver.WebDriver.quit">quit</a> method of <a class="reference internal" href="#browser" title="browser"><code class="xref py py-attr docutils literal notranslate"><span class="pre">browser</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">

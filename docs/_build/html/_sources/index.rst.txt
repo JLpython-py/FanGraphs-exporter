@@ -23,99 +23,141 @@ API Reference
 =============
 
 
-.. py:class:: class WebDriver(self):
+.. py:class:: class fgexporter.WebDriver
 
-	.. py:attribute:: options
-	
-		The options returned after calling :py:func:`selenium.webdriver.firefox.options.Options`
-		The default options used:
+	.. py:classmethod:: WebDriver.__init__(self)
 
-			* ``self.options.headless``: ``True``
-			* ``self.options.preferences``: 
-	
-				* ``"browser.download.folderList"``: 2
-				* ``"browser.download.manager.showWhenStarting"``: ``False``
-				* ``"browser.download.dir"``: ``os.getcwd()``
-				* ``"browser.helperApps.neverAsk.saveToDisk"``: ``"text/csv"``
+		.. py:attribute:: options
 
-.. py:class:: class FanGraphs(self, *, setting)
+			:returns: The `selenium.webdriver.firefox.options.Options`_ object
 
-	:param str setting: The setting string which corresponds to the FanGraphs page
-	
-		+---------------------------+----------------------------------+
-		| **FanGraphs Page Title**  | **Corresponding setting string** |
-		+---------------------------+----------------------------------+
-		| Major League Leaderboards | 'leaders'                        |
-		+---------------------------+----------------------------------+
-		| Projections               | 'projections'                    |
-		+---------------------------+----------------------------------+
+			The default options used:
 
-	:raises fgexporter.InvalidSettingError: If the ``setting`` argument is not recognized
+				.. py:attribute:: headless: ``True``
+				.. py:attribute:: preferences:
+
+					* ``"browser.download.folderList"``: 2
+					* ``"browser.download.manager.showWhenStarting"``: ``False``
+					* ``"browser.download.dir"``: ``os.getcwd()``
+					* ``"browser.helperApps.neverAsk.saveToDisk"``: ``"text/csv"``
+
+			.. _selenium.webdriver.firefox.options.Options: https://selenium-python.readthedocs.io/api.html#selenium.webdriver.firefox.options.Options
+
+
+.. py:exception:: InvalidSettingError
+
+	Raised when the setting argument of :py:meth:`FanGraphs.__init__` is not recognized
+
+
+.. py:class:: class fgexporter.FanGraphs
+
+
+	.. py:classmethod:: FanGraphs.__init__(self, *, setting)
+
+		:param str setting: The setting string which corresponds to the FanGraphs page
+
+			+---------------------------+----------------------------------+
+			| **FanGraphs Page Title**  | **Corresponding setting string** |
+			+---------------------------+----------------------------------+
+			| Major League Leaderboards | 'leaders'                        |
+			+---------------------------+----------------------------------+
+			| Projections               | 'projections'                    |
+			+---------------------------+----------------------------------+
+
+		:raises :py:exc:`fgexporter.InvalidSettingError`: If the ``setting`` argument is not recognized
+
 
 		.. py:attribute:: address
-		
-			The URL which corresponds to the original FanGraphs page.
-		
-			+---------------------------+-------------------------------------------+
-			| **FanGraphs Page Title**  | **Corresponding URL**                     |
-			+---------------------------+-------------------------------------------+
-			| Major League Leaderboards | https://fangraphs.com/leaders.aspx        |
-			+---------------------------+-------------------------------------------+
-			| Projections               | https://fangraphs.com/projections.aspx    |
-			+---------------------------+-------------------------------------------+
+
+			:returns: The URL which corresponds to the initial FanGraphs page
+
+				+---------------------------+-------------------------------------------+
+				| **FanGraphs Page Title**  | **Corresponding URL**                     |
+				+---------------------------+-------------------------------------------+
+				| Major League Leaderboards | https://fangraphs.com/leaders.aspx        |
+				+---------------------------+-------------------------------------------+
+				| Projections               | https://fangraphs.com/projections.aspx    |
+				+---------------------------+-------------------------------------------+
+
 
 		.. py:attribute:: selectors
-		
-			A dictionary with the CSS selectors for the data configuration category, stored by type.
-		
+
+			:returns: A dictionary with the CSS selectors for the data configuration categories, stored by type.
+			:rtype: Dict
+
+
 		.. py:attribute:: webdriver
-		
-			Holds the :py:class:`WebDriver` instance.
+
+			:returns: The :py:class:`WebDriver` instance.
+
 
 		.. py:attribute:: browser
 
-			References the :py:attr:`browser` attribute of :py:attr:`webdriver`.
+			:returns: The :py:attr:`browser` attribute of :py:attr:`webdriver`.
+
+
+	.. py:exception:: InvalidCategoryError
+
+		Raised when the data configuration category is invalid
+
+
+	.. py:exception:: InvalidOptionError
+
+		Raised when the data configuration option is invalid
+
 
 	.. py:classmethod:: get_options(self, category)
 	
 		:param str category: The data configuration category
 		:returns: List of valid options for ``category``
 		:rtype: List[Str]
-		:raises fgexporter.FanGraphs.InvalidCategoryError: If ``category`` is not recognized
+		:raises FanGraphs.InvalidCategoryError: If ``category`` is not recognized
+
 	
 	.. py:classmethod:: get_current(self, category)
 	
 		:param str category: The data configuration category
 		:returns: Current option for ``category``
 		:rtype: Str
-		:raises fgexporter.FanGraphs.InvalidCategoryError: If ``category`` is not recognized
+		:raises FanGraphs.InvalidCategoryError: If ``category`` is not recognized
+
 	
 	.. py:classmethod:: config(self, **kwargs)
 	
 		:param kwargs: Data configurations
-		:raises fgexporter.FanGraphs.InvalidCategoryError: If keyword is not recognized
-		:raises fgexporter.FanGraphs.InvalidOptionError: If keyword argument is not recognized
+		:raises FanGraphs.InvalidCategoryError: If keyword is not recognized
+		:raises FanGraphs.InvalidOptionError: If keyword argument is not recognized
 
 		:Keyword Arguments:
 			
-			category (str): The data configuration option which corresponds to the category
+			category (str): The data configuration option which corresponds to the category. Use :py:meth:`get_options` to get possible options.
 
 				*Note that the keyword argument name is identical to the corresponding string value.*
 
+
 	.. py:classmethod:: reset(self)
 	
-		Passes :py:attr:`address` to the :py:func:`get` method of :py:attr:`browser`
-	
+		Passes :py:attr:`address` to the `get`_ method of :py:attr:`browser`
+		
+		.. _`get`: https://selenium-python.readthedocs.io/api.html#selenium.webdriver.remote.webdriver.WebDriver.get
+
+
 	.. py:classmethod:: location(self)
 	
 		Returns the address that the browser is current at.
 	
-		:return: :py:attr:`current_url` attribute of :py:attr:`browser`
+		:return: `current_url`_ attribute of :py:attr:`browser`
 		:rtype: Str
 	
+		.. _`current_url`: https://selenium-python.readthedocs.io/api.html#selenium.webdriver.remote.webdriver.WebDriver.current_url
+
+
 	.. py:classmethod:: end_task(self)
 	
-		Calls :py:meth:`quit` method of :py:attr:`browser`
+		Calls `quit`_ method of :py:attr:`browser`
+
+		.. _`quit`: https://selenium-python.readthedocs.io/api.html#selenium.webdriver.firefox.webdriver.WebDriver.quit
+
 
 	.. py:classmethod:: export(self)
 	
@@ -125,6 +167,7 @@ API Reference
 
 		:returns: Name of exported file
 		:rtype: Str
+
 
 ==================
 Indices and tables
